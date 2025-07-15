@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: task-backend
+          image: asia-south2-docker.pkg.dev/modular-granite-466010-d3/mern-repo/task-backend
           ports:
             - containerPort: 5000
           env:

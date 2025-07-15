@@ -27,6 +27,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: task-frontend
+          image: asia-south2-docker.pkg.dev/modular-granite-466010-d3/mern-repo/task-frontend
           ports:
             - containerPort: 3000

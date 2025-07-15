@@ -7,8 +7,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_FRONTEND: ${{ secrets.DOCKER_USERNAME }}/task-frontend
-  IMAGE_BACKEND: ${{ secrets.DOCKER_USERNAME }}/task-backend
+  IMAGE_FRONTEND: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mern-repo/task-frontend
+  IMAGE_BACKEND: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mern-repo/task-backend
 
 jobs:
   build-and-deploy:
