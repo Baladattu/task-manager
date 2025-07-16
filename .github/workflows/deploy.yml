@@ -5,63 +5,34 @@ on:
     branches:
       - main
 
-env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-  CLUSTER_NAME: mern-cluster
-  REGION: asia-south2
-  BACKEND_IMAGE: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mern-repo/task-backend
-  FRONTEND_IMAGE: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mern-repo/task-frontend
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Google Cloud SDK
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          install_components: true
 
-      - name: Install gke-gcloud-auth-plugin
+      - name: Install GKE Auth Plugin
         run: |
-          curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/components.json | grep gke-gcloud-auth-plugin
           gcloud components install gke-gcloud-auth-plugin --quiet
 
-      - name: Authenticate Docker to Google Artifact Registry
-        run: gcloud auth configure-docker asia-south2-docker.pkg.dev
-
-      - name: Build and Push Backend Docker Image
+      - name: Configure kubectl
         run: |
-          docker build -t $BACKEND_IMAGE ./backend
-          docker push $BACKEND_IMAGE
+          gcloud container clusters get-credentials mern-cluster \
+            --region asia-south2
 
-      - name: Build and Push Frontend Docker Image
-        run: |
-          docker build -t $FRONTEND_IMAGE ./frontend
-          docker push $FRONTEND_IMAGE
-
-      - name: Get GKE Credentials
-        run: |
-          gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION
-
-      - name: Set Backend Image in Deployment
-        run: |
-          kubectl set image deployment/backend backend=$BACKEND_IMAGE
-
-      - name: Set Frontend Image in Deployment
-        run: |
-          kubectl set image deployment/frontend frontend=$FRONTEND_IMAGE
-
-      - name: Apply Kubernetes Manifests
+      - name: Deploy to GKE
         run: |
           kubectl apply -f manifests/
-
-      - name: Check Deployment Rollout Status
-        run: |
-          kubectl rollout status deployment/backend
-          kubectl rollout status deployment/frontend
