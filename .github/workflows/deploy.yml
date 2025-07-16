@@ -9,9 +9,8 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   CLUSTER_NAME: mern-cluster
   REGION: asia-south2
-  REPO_NAME: mern-repo
-  BACKEND_IMAGE: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ env.REPO_NAME }}/task-backend
-  FRONTEND_IMAGE: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ env.REPO_NAME }}/task-frontend
+  BACKEND_IMAGE: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mern-repo/task-backend
+  FRONTEND_IMAGE: asia-south2-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/mern-repo/task-frontend
 
 jobs:
   deploy:
